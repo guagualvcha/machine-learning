@@ -117,10 +117,6 @@ def classify(inx,dataSet,labels,k,model=None):
     
     
     
-"""
-test_case1 约会系统
-"""    
-#
 if __name__=="__main__":
     #testcase_1
     features,labels=files2matrix('datingTestSet2.txt',3)
