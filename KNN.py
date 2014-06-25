@@ -6,6 +6,7 @@ Created on Wed Jun 25 12:45:22 2014
 """
 from pylab import *
 import operator
+import os
 from matplotlib  import pyplot as plt
 
 
@@ -26,13 +27,28 @@ def files2matrix(filename,numOfFeatures):
         returnmat[index,:]=lineFormat[0:numOfFeatures]
         labels.append(int(lineFormat[-1]))
         index+=1
+    fr.close()
     return returnmat,array(labels)
     
 """
 读取二进制图像文件
 """    
 def files2vectors(dirname):
-    fileDir=listdir()
+    fileDir=os.listdir(dirname)
+    features=[]
+    labels=[]
+    for i in range(len(fileDir)):
+        fr=open(dirname+'/'+fileDir[i])
+        arrayOnLines=fr.readlines()
+        vector=[]
+        for line in arrayOnLines:
+            line=line.strip()
+            vector.extend(map(bool,map(int,line)))
+        features.append(vector)
+        labels.append(int(fileDir[i][0]))
+        fr.close()
+    return array(features),array(labels)
+
     
 
 
@@ -73,8 +89,11 @@ def autoScale(dataSet,xmax=1,xmin=0):
 """
 分类预测
 """    
-def classify(inx,dataSet,labels,k,model):
-    scaleinx=model.scaleForData(inx)
+def classify(inx,dataSet,labels,k,model=None):
+    if model==None:
+        scaleinx=inx
+    else:
+        scaleinx=model.scaleForData(inx)
     m=dataSet.shape[0]
     result=array([labels[0]]*(inx.shape[0]))
     j=0
@@ -103,6 +122,7 @@ test_case1 约会系统
 """    
 #
 if __name__=="__main__":
+    #testcase_1
     features,labels=files2matrix('datingTestSet2.txt',3)
     rate=0.1
     k=int(features.shape[0]*rate)
@@ -110,15 +130,21 @@ if __name__=="__main__":
     test_labels,train_labels=labels[0:k],labels[k+1:]
     scale_test_features,model=autoScale(train_features)
     predict_labels=classify(test_features,scale_test_features,train_labels,20,model)
-    for i in range(k):
-        print '%d 判定为 %d '%(test_labels[i],predict_labels[i])
     error_rate=float(sum(test_labels-predict_labels!=0))/k
-    print error_rate,sum(test_labels-predict_labels!=0)
-    
-"""
-test_case 2 手写字体识别
-"""
+    print '约会对象分类错误识别率是： ',error_rate,sum(test_labels-predict_labels!=0)
+    print '总测试个数：',k
+    #test_case_2
+    train_features,train_labels=files2vectors('trainingDigits')
+    test_features,test_labels=files2vectors('testDigits')
+    predict_labels=classify(test_features,train_features,train_labels,10)
+    m=len(predict_labels)    
+    error_rate=float(sum((predict_labels-test_labels)!=0))/m
+    print '手写字体错误识别率是： ',error_rate
+    print '总测试个数：',m
+
         
+    
+    
         
     
         
