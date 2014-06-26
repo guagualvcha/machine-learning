@@ -40,7 +40,7 @@ def file2dataSet(filename):
     for line in readLines:
         line=line.strip()
         words=regEx.split(line)
-        finalwords=map(str.lower,filter(lambda x:len(x)>3,words))
+        finalwords=map(str.lower,filter(lambda x:len(x)>2,words))
         splitwords.extend(finalwords)
     return splitwords
 """
@@ -72,11 +72,9 @@ def predict(total_model,wordList,test_dataSet,labels):
         for i in range(len(total_model)):
             model=total_model[i]
             prob=(reduce(operator.add,filter(lambda x:x!=0,map(operator.mul,model,test_dataSet_vector))))
-            print i,prob
             if prob>maxprob:
                 maxprob=prob
                 index=i
-                print index
         result_labels.append(labels[index])
     return result_labels
         
@@ -103,6 +101,10 @@ if __name__=='__main__':
     
     print spam_predictLabel
     print ham_predictLabel
+    
+    train_data=[['thank','please','enjoy','mathematician'],['buy','save','price','order']]
+    predictLabel=predict(total_model,wordList,train_data,['ham email','spam email'])
+    print predictLabel
 
 
 
