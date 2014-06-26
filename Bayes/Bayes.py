@@ -5,10 +5,10 @@ Created on Thu Jun 26 15:14:56 2014
 @author: uncle_bai
 """
 import re
-from  numpy import sum  
+from  numpy import sum,log  
 import os
 import operator
-
+import sys
 """
 创建字典
 """
@@ -26,7 +26,7 @@ def word2vector(dataSet,wordDict):
         vector=[0]*len(wordDict)
         for word in data:
             if word in wordDict:
-                vector[wordDict.index(word)]=1
+                vector[wordDict.index(word)]+=1#此处可以选择词袋模型或者词集模型
         vectors.append(vector)
     return vectors
 """
@@ -58,7 +58,7 @@ def filedir2dataSet(filedir):
 生成一个Bayes模型，用到了拉斯平滑
 """
 def form2model(vectors):
-    result=(sum(vectors,0)+1.)/(len(vectors)+2.)
+    result=log((sum(vectors,0)+1.)/(len(vectors)+2.))
     return list(result)
 """
 用生成的Bayes模型预测分类
@@ -68,13 +68,15 @@ def predict(total_model,wordList,test_dataSet,labels):
     result_labels=[]
     for test_dataSet_vector in test_dataSet_vectors:
         index=-1
-        maxprob=0
+        maxprob=-sys.float_info.max
         for i in range(len(total_model)):
             model=total_model[i]
-            prob=reduce(operator.mul,filter(lambda x:x!=0,map(operator.mul,model,test_dataSet_vector)))
+            prob=(reduce(operator.add,filter(lambda x:x!=0,map(operator.mul,model,test_dataSet_vector))))
+            print i,prob
             if prob>maxprob:
                 maxprob=prob
                 index=i
+                print index
         result_labels.append(labels[index])
     return result_labels
         
@@ -99,8 +101,8 @@ if __name__=='__main__':
     spam_predictLabel=predict(total_model,wordList,spam_train_data,['ham email','spam email'])
     ham_predictLabel=predict(total_model,wordList,ham_train_data,['ham email','spam email'])
     
-    print ham_predictLabel
     print spam_predictLabel
+    print ham_predictLabel
 
 
 
