@@ -5,7 +5,6 @@ Created on Thu Jun 26 22:09:01 2014
 @author: zjubfd
 """
 from numpy import *
-
 import operator
 
 def loadData(filename):
@@ -24,7 +23,7 @@ def loadData(filename):
     
 
 def sigmoid(z):
-    return 1./exp(-z)
+    return 1./(1+exp(-z))
 
     
 def train(features,labels):
@@ -32,19 +31,25 @@ def train(features,labels):
     labelsMatrix=mat(labels).transpose()
     m,n=shape(featuresMatrix)
     alpha=0.01
-    maxite=2
+    maxite=5000
     weights=ones((n,1))
     for i in range(maxite):
-        print featuresMatrix
-        print weights
         z=featuresMatrix*weights
-        print z
         h=sigmoid(z)
         error=labelsMatrix-h
-        weights=weights-alpha*featuresMatrix.transpose()*error
+        weights=weights+alpha*featuresMatrix.transpose()*error
     return weights
-        
+    
+def predict(features,weights):
+    featuresMatrix=mat(features)  
+    z=featuresMatrix*weights
+    return z
+if __name__=='__main__':
+    features,labels=loadData('testSet.txt')
+    weights=train(features,labels)
+    plabels=map(lambda x:1 if x>0 else 0,predict(features,weights))
+    error_num=sum(map(operator.xor,plabels,labels))
+    error_rate=double(error_num)/len(labels)
+    print error_rate
 
-features,labels=loadData('testSet.txt')
-weights=train(features,labels)
-#print weights
+
