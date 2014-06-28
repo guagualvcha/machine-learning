@@ -62,7 +62,9 @@ if __name__=='__main__':
     plabels=map(lambda x:1 if x>0 else 0,predict(features,weights))
     error_num=sum(map(operator.xor,plabels,labels))
     error_rate=double(error_num)/len(labels)
-    print 'error_rate is: ',error_rate
+    print 'error_rate is: ',error_rate#计算错误分类比率
+    
+    #画出决策边界
     fig=plt.figure()
     ax=fig.add_subplot(111)
     ax.scatter([feature[0] for feature in features ],[feature[1] for feature in features]\
