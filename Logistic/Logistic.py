@@ -2,6 +2,7 @@
 """
 Created on Thu Jun 26 22:09:01 2014
 改进的随机梯度上升法速度更快，效果更好
+缺失数据用0 表示，在更新weights时相应的权重不会改变
 @author: zjubfd
 """
 from numpy import *
@@ -18,7 +19,7 @@ def loadData(filename):
     labels=[]
     for line in readLines:
         lineArr=line.strip().split()
-        labels.append(int(lineArr[-1]))
+        labels.append(int(float(lineArr[-1])))
         features.append(map(float,lineArr[:-1]))
     for feature in features:
         feature.append(1.0)
@@ -74,7 +75,7 @@ def gradAscent(features,labels,numiter=150):
     
     
 if __name__=='__main__':
-    features,labels=loadData('testSet.txt')
+    features,labels=loadData('horseColicTraining.txt')
     weights=gradAscent(features,labels)
     print weights.shape
     plabels=map(lambda x:1 if x>0 else 0,predict(features,weights))
