@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 26 22:09:01 2014
-
+改进的随机梯度上升法速度更快，效果更好
 @author: zjubfd
 """
 from numpy import *
@@ -39,7 +39,7 @@ def train(features,labels):
     labelsMatrix=mat(labels).transpose()
     m,n=shape(featuresMatrix)
     alpha=0.01
-    maxite=5000
+    maxite=150
     weights=ones((n,1))
     for i in range(maxite):
         z=featuresMatrix*weights
@@ -52,13 +52,31 @@ def train(features,labels):
 """    
 def predict(features,weights):
     featuresMatrix=mat(features)  
-    z=featuresMatrix*weights
+    weightsMatrix=mat(weights)
+    print weightsMatrix,weightsMatrix.shape
+    z=featuresMatrix*weightsMatrix
     return z
+"""
+改进的随机梯度训练方法，在线训练
+"""
+def gradAscent(features,labels,numiter=150):
+    m,n=shape(features)
+    weights=ones((n,1))
+    for j in range(numiter):
+        dataIndex=range(m)
+        for i in range(m):
+            alpha=4/(1.0+i+j)+0.01
+            randIndex=int(random.uniform(0,len(dataIndex)))
+            h=sigmoid(sum(map(operator.mul,features[randIndex],weights)))
+            weights+=alpha*(labels[randIndex]-h)*(reshape(array(features[randIndex]),(n,1)))
+            del(dataIndex[randIndex])
+    return weights
     
     
 if __name__=='__main__':
     features,labels=loadData('testSet.txt')
-    weights=train(features,labels)
+    weights=gradAscent(features,labels)
+    print weights.shape
     plabels=map(lambda x:1 if x>0 else 0,predict(features,weights))
     error_num=sum(map(operator.xor,plabels,labels))
     error_rate=double(error_num)/len(labels)
