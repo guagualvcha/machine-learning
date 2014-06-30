@@ -80,18 +80,35 @@ def adaBoostPredictDs(dataArr,bss):
         labels+=bs['alpha']*predict(dataArr,bs)
     return array([1. if label>0 else -1. for label in labels])
         
-        
+def file2data(filename):
+    fr=open(filename)
+    dataList=[]
+    labelsList=[]
+    for line in fr.readlines():
+        lineArr=line.strip().split()
+        dataList.append(map(float,lineArr[:-1]))
+        labelsList.append(float(lineArr[-1]))
+    return array(dataList),array(labelsList)
         
 """
 testcase
 """      
 if __name__=='__main__':
+    #test1
     dataArr=array([[1.,2.1],[2.,1.1],[1.3,1.],[1.,1.],[2.,1.]])
     labels=array([1.,1.,-1.,-1.,1.])
     bss=adaBoostTrainDs(dataArr,labels)
     plabels=adaBoostPredictDs(dataArr,bss)
     print 'labels is',labels
     print 'plabels is ',plabels
+    #test2
+    dataArr,labels=file2data('horseColicTraining2.txt')
+    bss=adaBoostTrainDs(dataArr,labels)
+    testArr,tlabels=file2data('horseColicTest2.txt')
+    plabels=adaBoostPredictDs(testArr,bss)
+    print tlabels-plabels
+    print float(sum(abs(tlabels-plabels)/2))/len(tlabels)
+    
 
 
                    
