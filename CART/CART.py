@@ -6,6 +6,7 @@ Created on Tue Jul  1 20:35:54 2014
 """
 
 from numpy import *
+from matplotlib import pyplot as plt
 """
 回归类型的节点表示
 """
@@ -202,7 +203,11 @@ def test3():
     print '相关洗漱是：',corrcoef(py,data[:,-1],rowvar=0)
     
 if __name__=='__main__':
-    test3()
+    data=file2data('sine.txt')
+    data=mat(data)
+    print data
+    plt.scatter(array(data[:,0]),array(data[:,1]))
+    plt.show()
         
 
 
